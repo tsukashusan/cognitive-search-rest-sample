@@ -1,158 +1,72 @@
-@service_name=
-@index_name=
-@indexer=
+@service_name= tutorial-demo1
+@port = 443
+@datasource_name = samplesource
+@credentials = 
+@container = sample
+@index_name= my-search-index-1
+@indexer=my-search-indexer-1
 @query=$top=10
 @api_version=2021-04-30-Preview
-@api_key=
-@api_primary_key=
+@query_key= 
+@api_primary_key= 
+
+### データソースの作成
+PUT /datasources/{{datasource_name}}?api-version={{api_version}}
+  HOST: {{service_name}}.search.windows.net:{{port}}
+  Content-Type: application/json  
+  api-key: {{api_primary_key}}
+
+{   
+    "description" : "sample datasource",  
+    "type" : "azureblob",
+    "credentials" : { "connectionString" : "{{credentials}}" },
+    "container": {
+        "name": "{{container}}"
+    }
+}
+
+### インデックスの削除
+DELETE /indexes/{{index_name}}?api-version={{api_version}}
+  HOST: {{service_name}}.search.windows.net:{{port}}
+  Content-Type: application/json  
+  api-key: {{api_primary_key}}
 
 ### インデックスの作成
-PUT https://{{service_name}}.search.windows.net/indexes/{{index_name}}?api-version={{api_version}}
-  Content-Type: application/json
+PUT /indexes/{{index_name}}?api-version={{api_version}}
+  HOST: {{service_name}}.search.windows.net:{{port}}
+  Content-Type: application/json  
   api-key: {{api_primary_key}}
 
 {
   "fields": [
-    {
-      "name": "id",
-      "type": "Edm.String",
-      "facetable": false,
-      "filterable": false,
-      "key": true,
-      "retrievable": true,
-      "searchable": false,
-      "sortable": false,
-      "analyzer": null,
-      "indexAnalyzer": null,
-      "searchAnalyzer": null,
-      "synonymMaps": [],
-      "fields": []
-    },
-    {
-      "name": "url",
-      "type": "Edm.String",
-      "facetable": false,
-      "filterable": true,
-      "key": false,
-      "retrievable": true,
-      "searchable": true,
-      "sortable": false,
-      "analyzer": "en.lucene",
-      "indexAnalyzer": null,
-      "searchAnalyzer": null,
-      "synonymMaps": [],
-      "fields": []
-    },
-    {
-      "name": "file_name",
-      "type": "Edm.String",
-      "facetable": false,
-      "filterable": false,
-      "key": false,
-      "retrievable": true,
-      "searchable": false,
-      "sortable": false,
-      "analyzer": null,
-      "indexAnalyzer": null,
-      "searchAnalyzer": null,
-      "synonymMaps": [],
-      "fields": []
-    },
-    {
-      "name": "content",
-      "type": "Edm.String",
-      "facetable": false,
-      "filterable": true,
-      "key": false,
-      "retrievable": false,
-      "searchable": true,
-      "sortable": false,
-      "analyzer": "en.lucene",
-      "indexAnalyzer": null,
-      "searchAnalyzer": null,
-      "synonymMaps": [],
-      "fields": []
-    },
-    {
-      "name": "metadata_storage_name",
-      "type": "Edm.String",
-      "facetable": false,
-      "filterable": false,
-      "key": false,
-      "retrievable": false,
-      "searchable": false,
-      "sortable": false,
-      "analyzer": null,
-      "indexAnalyzer": null,
-      "searchAnalyzer": null,
-      "synonymMaps": [],
-      "fields": []
-    },
-    {
-      "name": "metadata_storage_size",
-      "type": "Edm.Int32",
-      "facetable": false,
-      "filterable": false,
-      "retrievable": true,
-      "sortable": false,
-      "analyzer": null,
-      "indexAnalyzer": null,
-      "searchAnalyzer": null,
-      "synonymMaps": [],
-      "fields": []
-    },
-    {
-      "name": "metadata_creation_date",
-      "type": "Edm.DateTimeOffset",
-      "facetable": false,
-      "filterable": false,
-      "retrievable": true,
-      "sortable": false,
-      "analyzer": null,
-      "indexAnalyzer": null,
-      "searchAnalyzer": null,
-      "synonymMaps": [],
-      "fields": []
-    }
-  ],
-  "scoringProfiles": [],
-  "defaultScoringProfile": "",
-  "corsOptions": null,
-  "analyzers": [],
-  "charFilters": [],
-  "tokenFilters": [],
-  "tokenizers": [],
-  "similarity": {
-    "@odata.type": "#Microsoft.Azure.Search.BM25Similarity",
-    "k1": null,
-    "b": null
-  },
-  "encryptionKey": null,
-  "semantic": null
-}
+      { "name": "ID", "type": "Edm.String", "key": true, "searchable": false },
+      { "name": "content", "type": "Edm.String", "searchable": true, "filterable": false },
+      { "name": "metadata_storage_name", "type": "Edm.String", "searchable": false, "filterable": true, "sortable": true  },
+      { "name": "metadata_storage_size", "type": "Edm.Int64", "searchable": false, "filterable": true, "sortable": true  },
+      { "name": "metadata_storage_content_type", "type": "Edm.String", "searchable": false, "filterable": true, "sortable": true },
+      { "name": "file_name", "type": "Edm.String", "searchable": false, "filterable": true, "sortable": true },
+      { "name": "url", "type": "Edm.String", "searchable": false, "filterable": true, "sortable": true },
+      { "name": "raw", "type": "Edm.String", "searchable": false, "filterable": true, "sortable": true }  
+  ]
+ }
 
-#   "suggesters": [
-#     {
-#       "name": "challenge2suggester",
-#       "searchMode": "analyzingInfixMatching",
-#       "sourceFields": [
-#       ]
-#     }
-#   ],
+### インデクサーの削除
+DELETE /indexers/{{indexer}}?api-version={{api_version}}
+  HOST: {{service_name}}.search.windows.net:{{port}}
+  Content-Type: application/json  
+  api-key: {{api_primary_key}}
 
-### インデクサーのリセット
-POST https://{{service_name}}.search.windows.net/indexers/{{indexer}}/reset?api-version={{api_version}}
-  api-key:{{api_primary_key}}
-
-### インデクサー作成（およびフィールドマッピング）
-PUT https://{{service_name}}.search.windows.net/indexers/{{indexer}}?api-version={{api_version}}
-  Content-Type: application/json
-  api-key:{{api_primary_key}}
+### インデクサーの作成
+PUT /indexers/{{indexer}}?api-version={{api_version}}
+  HOST: {{service_name}}.search.windows.net:{{port}}
+  Content-Type: application/json  
+  api-key: {{api_primary_key}}
 
 {
-    "dataSourceName" : "test",
+    "dataSourceName" : "{{datasource_name}}",
     "targetIndexName" : "{{index_name}}",
-    "fieldMappings" : [
+    "fieldMappings" :
+    [
         {
             "sourceFieldName" : "metadata_storage_name",
             "targetFieldName" : "file_name"
@@ -160,27 +74,48 @@ PUT https://{{service_name}}.search.windows.net/indexers/{{indexer}}?api-version
         {
             "sourceFieldName" : "metadata_storage_path",
             "targetFieldName" : "url"
+        },
+        {
+            "sourceFieldName" : "metadata_storage_path",
+            "targetFieldName" : "id",
+            "mappingFunction" : { 
+              "name" : "base64Encode", 
+              "parameters" : { "useHttpServerUtilityUrlTokenEncode" : true }
+            }
         }
-]
+    ]
 }
 
-### インデクサーの実行
-POST https://{{service_name}}.search.windows.net/indexers/{{indexer}}/run?api-version={{api_version}}
-  api-key:{{api_primary_key}}
-### インデクサーのステータス
-GET https://{{service_name}}.search.windows.net/indexers/{{indexer}}/status?api-version={{api_version}}
- api-key:{{api_primary_key}}
 
+### インデクサーのリセット
+POST /indexers/{{indexer}}/reset?api-version={{api_version}}
+  HOST: {{service_name}}.search.windows.net:{{port}}
+  Content-Type: application/json  
+  api-key: {{api_primary_key}}
+
+
+### インデクサーの実行
+POST /indexers/{{indexer}}/run?api-version={{api_version}}
+  HOST: {{service_name}}.search.windows.net:{{port}}
+  Content-Type: application/json  
+  api-key: {{api_primary_key}}
+
+### インデクサーのステータス
+GET /indexers/{{indexer}}/status?api-version={{api_version}}
+  HOST: {{service_name}}.search.windows.net:{{port}}
+  Content-Type: application/json  
+  api-key: {{api_primary_key}}
 
 ### 検索（GET）
-GET https://{{service_name}}.search.windows.net/indexes/{{index_name}}/docs?api-version={{api_version}}&search={{query}}
+GET /indexes/{{index_name}}/docs?api-version={{api_version}}&search={{query}}
+  HOST: {{service_name}}.search.windows.net:{{port}}
   Content-Type: application/json
-  api-key: {{api_key}}
+  api-key: {{query_key}}
 
 ### 検索 (POST)
-POST https://{{service_name}}.search.windows.net/indexes/{{index_name}}/docs/search?api-version={{api_version}}
+POST /indexes/{{index_name}}/docs/search?api-version={{api_version}}
   Content-Type: application/json
-  api-key: {{api_key}}
+  api-key: {{query_key}}
 
 {
     "count": true,
@@ -189,9 +124,9 @@ POST https://{{service_name}}.search.windows.net/indexes/{{index_name}}/docs/sea
 }
 
 ### 検索 (POST)
-POST https://{{service_name}}.search.windows.net/indexes/{{index_name}}/docs/search?api-version={{api_version}}
+POST /indexes/{{index_name}}/docs/search?api-version={{api_version}}
   Content-Type: application/json
-  api-key: {{api_key}}
+  api-key: {{query_key}}
 
 {
     "count": true,
@@ -201,9 +136,9 @@ POST https://{{service_name}}.search.windows.net/indexes/{{index_name}}/docs/sea
 }
 
 ### 検索 (POST)
-POST https://{{service_name}}.search.windows.net/indexes/{{index_name}}/docs/search?api-version={{api_version}}
+POST /indexes/{{index_name}}/docs/search?api-version={{api_version}}
   Content-Type: application/json
-  api-key: {{api_key}}
+  api-key: {{query_key}}
 
 {
     "count": true,
